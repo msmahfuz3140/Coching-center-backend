@@ -13,6 +13,7 @@ const {
     updateAccess,
     blockAccess,
     getAccessRecords,
+    deleteAccess,
 } = require('../controllers/courseController');
 
 const router = express.Router();
