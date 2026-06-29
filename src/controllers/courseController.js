@@ -103,6 +103,26 @@ const getAllCourses = async (req, res) => {
     }
 };
 
+// Get All Courses (Admin - includes drafts)
+const getAllCoursesAdmin = async (req, res) => {
+    try {
+        const { category, status } = req.query;
+        let filter = {};
+
+        if (category) filter.category = category;
+        if (status === 'published') filter.isActive = true;
+        if (status === 'draft') filter.isActive = false;
+
+        const courses = await Course.find(filter)
+            .populate('createdBy', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, courses });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Get Course by Slug (Public)
 const getCourseBySlug = async (req, res) => {
     try {
@@ -314,6 +334,7 @@ module.exports = {
     updateCourse,
     deleteCourse,
     getAllCourses,
+    getAllCoursesAdmin,
     getCourseBySlug,
     requestCourseAccess,
     getPendingRequests,
