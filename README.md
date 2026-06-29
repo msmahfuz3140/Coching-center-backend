@@ -10,7 +10,7 @@ Express.js + MongoDB backend for course management system.
 npm install
 ```
 
-### 2. Configure Environment
+### 2. Configure Environment variable
 
 Create `.env` file:
 
