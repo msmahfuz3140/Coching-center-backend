@@ -1,169 +1,216 @@
 # Coaching Center Backend
 
-Express.js + MongoDB backend for course management system.
+Express.js backend API for the Coaching Center Management System.
 
-## Quick Start
+## Features
 
-### 1. Install Dependencies
+- User authentication & authorization (JWT)
+- Course management (CRUD operations)
+- Enrollment system with approval workflow
+- Notice management system
+- Notification system
+- Admin dashboard with statistics
+- File upload (Cloudinary integration)
+- MongoDB database
 
-```bash
-npm install
-```
+## Tech Stack
 
-### 2. Configure Environment variable
-
-Create `.env` file:
-
-```env
-PORT=5000
-NODE_ENV=development
-
-# MongoDB
-MONGODB_URI=mongodb://coching-center:xOpJ1xoCTs3KHx0B@ac-5ppqbt1-shard-00-00.lwxgi8z.mongodb.net:27017,ac-5ppqbt1-shard-00-01.lwxgi8z.mongodb.net:27017,ac-5ppqbt1-shard-00-02.lwxgi8z.mongodb.net:27017/coching_center?ssl=true&replicaSet=atlas-l7hopv-shard-0&authSource=admin&appName=Cluster0
-DB_NAME=coching_center
-
-# JWT
-JWT_SECRET=your-secret-key-here
-
-# CORS
-FRONTEND_URL=http://localhost:3000
-```
-
-### 3. Start Server
-
-```bash
-npm run dev
-```
-
-Server will start on **<http://localhost:5000>**
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB (Mongoose ODM)
+- **Authentication**: JWT (JSON Web Tokens)
+- **File Upload**: Multer + Cloudinary
+- **Deployment**: Vercel / Railway / Render
 
 ## Project Structure
 
 ```
 src/
 ├── config/
-│   └── database.js           # MongoDB connection
+│   └── database.js          # MongoDB connection
+├── controllers/
+│   ├── courseController.js  # Course operations
+│   ├── enrollmentController.js  # Enrollment management
+│   ├── noticeController.js  # Notice operations
+│   ├── notificationController.js  # Notification system
+│   ├── userController.js    # User management
+│   ├── statsController.js   # Admin statistics
+│   └── uploadController.js  # File upload handling
+├── middleware/
+│   └── auth.js              # JWT authentication middleware
 ├── models/
 │   ├── Course.js            # Course schema
-│   ├── CourseAccess.js       # Access tracking
-│   └── CourseRequest.js      # Requests
-├── controllers/
-│   └── courseController.js   # Business logic
+│   ├── CourseAccess.js      # Course access control
+│   ├── CourseRequest.js     # Course access requests
+│   ├── Enrollment.js        # Enrollment schema
+│   ├── Notice.js            # Notice schema
+│   ├── Notification.js      # Notification schema
+│   └── User.js              # User schema
 ├── routes/
-│   └── courseRoutes.js       # API routes
-├── middleware/
-│   └── auth.js              # JWT auth
-└── server.js                # Entry point
+│   └── index.js             # All API routes
+└── server.js                # Express server entry point
 ```
 
 ## API Endpoints
 
-### Public
+### Public Routes
+- `GET /api/courses` - Get all published courses
+- `GET /api/courses/:slug` - Get course by slug
+- `GET /api/notices` - Get public notices
 
-- `GET /api/courses` - List all courses
-- `GET /api/courses/:slug` - Get course details
+### Student Routes (Authenticated)
+- `POST /api/enrollments` - Request course enrollment
+- `GET /api/enrollments` - Get my enrollments
+- `PATCH /api/enrollments` - Update enrollment
+- `GET /api/notifications` - Get my notifications
+- `PATCH /api/notifications/:id/read` - Mark notification as read
+- `GET /api/users/me` - Get my profile
+- `PATCH /api/users/me` - Update my profile
 
-### Student (Auth Required)
-
-- `POST /api/courses/:courseSlug/request-access` - Request access
-
-### Admin (Admin Auth Required)
-
-- `POST /api/courses` - Create course
-- `PATCH /api/courses/:id` - Update course
-- `DELETE /api/courses/:id` - Delete course
-- `GET /api/courses/admin/requests` - Get pending requests
-- `POST /api/courses/admin/requests/:requestId/approve` - Approve
-- `POST /api/courses/admin/requests/:requestId/reject` - Reject
+### Admin Routes (Authenticated + Admin)
+- `GET /api/admin/stats` - Get dashboard statistics
+- `GET /api/admin/users` - Get all users
+- `PATCH /api/admin/users` - Update user
+- `DELETE /api/admin/users` - Delete user
+- `POST /api/admin/courses` - Create course
+- `PATCH /api/admin/courses/:id` - Update course
+- `DELETE /api/admin/courses/:id` - Delete course
+- `GET /api/admin/courses` - Get all courses (including drafts)
+- `GET /api/admin/enrollments` - Get all enrollments
+- `PATCH /api/admin/enrollments` - Update enrollment status
+- `DELETE /api/admin/enrollments` - Delete enrollment
+- `POST /api/admin/notices` - Create notice
+- `PATCH /api/admin/notices/:id` - Update notice
+- `DELETE /api/admin/notices/:id` - Delete notice
+- `GET /api/admin/notices` - Get all notices
+- `POST /api/upload/thumbnail` - Upload thumbnail
+- `POST /api/upload/profile` - Upload profile image
 
 ## Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| PORT | No | 5000 | Server port |
-| NODE_ENV | No | development | Environment |
-| MONGODB_URI | Yes | - | MongoDB connection string |
-| DB_NAME | Yes | - | Database name |
-| JWT_SECRET | Yes | - | JWT signing key |
-| FRONTEND_URL | Yes | - | Frontend URL for CORS |
+Create a `.env` file in the root directory:
+
+```env
+# Database
+MONGODB_URI=mongodb://your-connection-string
+DB_NAME=coching_center
+
+# Server
+PORT=5000
+NODE_ENV=development
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key
+
+# CORS
+FRONTEND_URL=http://localhost:3000
+
+# Cloudinary (for file uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+## Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Or use nodemon for auto-reload
+npm run dev
+```
+
+## Deployment
+
+### Option 1: Vercel (Recommended for this project)
+
+1. Install Vercel CLI:
+   ```bash
+   npm install -g vercel
+   ```
+
+2. Login to Vercel:
+   ```bash
+   vercel login
+   ```
+
+3. Deploy:
+   ```bash
+   vercel --yes
+   ```
+
+4. Add environment variables in Vercel dashboard
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+### Option 2: Railway
+
+1. Push code to GitHub
+2. Go to https://railway.app
+3. Create new project from GitHub repo
+4. Add environment variables
+5. Deploy
+
+### Option 3: Render
+
+1. Push code to GitHub
+2. Go to https://render.com
+3. Create new Web Service
+4. Connect GitHub repo
+5. Add environment variables
+6. Deploy
 
 ## Testing
 
-Use curl or Postman:
+Once deployed, test the API:
 
 ```bash
-# Get all courses
-curl http://localhost:5000/api/courses
+# Health check
+curl https://your-backend-url.vercel.app/api/health
 
-# Create course (requires auth)
-curl -X POST http://localhost:5000/api/courses \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{
-    "title": "Diploma Course",
-    "slug": "diploma-1",
-    "category": "Diploma",
-    "instructor": "John Doe"
-  }'
+# Get courses
+curl https://your-backend-url.vercel.app/api/courses
 ```
 
-## Models
+## Frontend Integration
 
-### Course
+Update your frontend's `.env.production`:
 
-- title (required)
-- slug (required, unique)
-- description
-- category (required)
-- syllabus
-- youtubeVideoId
-- youtubePlaylistId
-- instructor
-- price
-- isActive
-- createdBy
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-url.vercel.app/api
+```
 
-### CourseAccess
+Then redeploy the frontend.
 
-- studentId
-- studentEmail
-- courseId
-- courseSlug
-- status (active/suspended/expired)
-- grantedBy
-- grantedAt
-- expiresAt
+## Current Status
 
-### CourseRequest
+✅ Backend code complete
+✅ All routes configured
+✅ All controllers implemented
+✅ All models created
+✅ Authentication middleware ready
+✅ File upload configured
+✅ CORS configured
+✅ Deployment configs created (Vercel, Railway)
+⏳ **Backend needs to be deployed**
+⏳ **Frontend needs to be updated with backend URL**
 
-- studentId
-- studentEmail
-- courseId
-- courseSlug
-- status (pending/approved/rejected)
-- requestMessage
-- responseMessage
-- reviewedBy
-- reviewedAt
+## Next Steps
 
-## Troubleshooting
+1. **Deploy the backend** using one of the methods above
+2. **Get the backend URL** (e.g., `https://coching-center-backend.vercel.app`)
+3. **Update frontend** `.env.production` with the backend URL
+4. **Redeploy frontend** to Vercel
+5. **Test the connection** - The "failed to fetch" error should be resolved
 
-### MongoDB Connection Failed
+## Support
 
-- Check MONGODB_URI is correct
-- Ensure database user has correct permissions
-- Verify IP is whitelisted in MongoDB Atlas
-
-### Port Already in Use
-
-- Change PORT in .env
-- Or kill existing process: `lsof -ti:5000 | xargs kill`
-
-### CORS Issues
-
-- Ensure FRONTEND_URL in .env matches your frontend
-- Check Authorization header is included
-
----
-
-Made with ❤️ for Coaching Center
+For deployment issues, check:
+- MongoDB Atlas IP whitelist (add 0.0.0.0/0)
+- Environment variables are set correctly
+- Backend URL is accessible
+- CORS settings include your frontend domain
