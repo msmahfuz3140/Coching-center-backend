@@ -15,9 +15,10 @@ const uploadController = require('../controllers/uploadController');
 const router = express.Router();
 
 // Configure multer for file uploads
+const uploadDir = process.env.VERCEL ? '/tmp/uploads' : 'uploads/';
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
